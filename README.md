@@ -2,6 +2,8 @@
 
 A modern, responsive Task Management Application built with **Next.js 15** and **Supabase**. This application allows users to manage their tasks with extended features like Kanban board view, Timeline view, and real-time updates.
 
+**[🚀 Live Demo](https://tasks-app-fcantora.vercel.app/)**
+
 ## 🚀 Features
 
 ### Core
@@ -12,6 +14,7 @@ A modern, responsive Task Management Application built with **Next.js 15** and *
   - **Kanban Board**: Drag-and-drop style status management (visual only).
   - **Timeline**: Calendar-based view for scheduling.
 - **Status Tracking**: Mark tasks as Todo, In Progress, or Done.
+- **Data Integrity**: Robust validation with Zod (Start date < Due date, etc.) and auto-completion dates.
 
 ### Enhancements
 - ⚡ **Optimistic UI**: Instant feedback on user actions (creating, updating, deleting tasks) before server confirmation.
@@ -22,12 +25,13 @@ A modern, responsive Task Management Application built with **Next.js 15** and *
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router & Server Components)
 - **Language**: TypeScript
 - **Database & Auth**: [Supabase](https://supabase.com/)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **State Management**: React Hooks + Optimistic Updates
+- **Validation**: [Zod](https://zod.dev/)
 - **Utilities**: `date-fns`, `sonner` (for toasts), `clsx`, `tailwind-merge`
 
 ## 🏁 Getting Started
@@ -40,7 +44,7 @@ A modern, responsive Task Management Application built with **Next.js 15** and *
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/yourusername/tasks-app.git
    cd tasks-app
    ```
 
@@ -81,6 +85,8 @@ create table tasks (
   description text,
   status task_status default 'todo',
   due_date timestamp with time zone,
+  start_date timestamp with time zone,
+  end_date timestamp with time zone,
   is_completed boolean default false,
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
@@ -106,14 +112,13 @@ create policy "Users can delete their own tasks" on tasks
 ## 💡 Design Decisions & Trade-offs
 
 - **Supabase for Backend**: Chose Supabase for its "Backend-as-a-Service" capabilities, allowing for rapid development of Auth and Database features without maintaining a separate API server.
-- **Client-Side Fetching with RLS**: Used direct client-side calls to Supabase secured by Row Level Security (RLS). This reduces server load and simplifies the architecture for a single-page-like experience.
+- **Server Actions & Client Fetching**: Used a hybrid approach. Server Components for initial data fetching (SEO & Performance) and client-side hooks `useTasks` for interactivity.
 - **Optimistic Updates**: Implemented optimistic updates in `useTasks` hook to ensure the app feels snappy and native-like, masking network latency.
-- **Tailwind CSS v4**: Utilized the latest version of Tailwind for zero-config build performance and modern CSS features.
+- **Zod Validation**: Used schemas for strict frontend validation to prevent inconsistent data states (e.g. invalid date ranges).
 
 ## 🔮 Future Improvements
 
 With more time, I would consider adding:
 - **Drag and Drop**: Full `dnd-kit` integration for the Kanban board to allow updating status by dragging.
-- **Server Components**: Refactor some data fetching to React Server Components for better initial load performance (SEO).
-- **Testing**: Add Jest and React Testing Library for unit tests, and Playwright for E2E testing.
 - **Recurrence**: Add support for recurring tasks (daily, weekly).
+- **Testing**: Add Jest and React Testing Library for unit tests, and Playwright for E2E testing.

@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://tasks-app-demo.vercel.app",
+    url: "https://tasks-app-fcantora.vercel.app/",
     title: "Task Manager - Organize Your Work",
     description: "Manage tasks efficiently with Kanban, Timeline, and List views.",
     siteName: "Task Manager",
