@@ -17,8 +17,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Task Manager - Organize Your Work",
+  title: {
+    default: "Task Manager",
+    template: "%s | Task Manager",
+  },
   description: "A modern task management app built with Next.js and Supabase",
+  keywords: ["Next.js", "Supabase", "Task Management", "React", "Tailwind CSS"],
+  authors: [{ name: "Your Name" }],
+  creator: "Your Name",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://tasks-app-demo.vercel.app",
+    title: "Task Manager - Organize Your Work",
+    description: "Manage tasks efficiently with Kanban, Timeline, and List views.",
+    siteName: "Task Manager",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Task Manager - Organize Your Work",
+    description: "Manage tasks efficiently with Kanban, Timeline, and List views.",
+    creator: "@yourhandle",
+  },
 };
 
 export default function RootLayout({
@@ -33,7 +53,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
-          <Toaster />
+          <Toaster richColors />
         </ThemeProvider>
       </body>
     </html>

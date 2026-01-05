@@ -44,6 +44,14 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --color-status-todo: var(--status-todo);
+  --color-status-todo-fg: var(--status-todo-fg);
+  --color-status-inprogress: var(--status-inprogress-bg);
+  --color-status-inprogress-fg: var(--status-inprogress-fg);
+  --color-status-inprogress-border: var(--status-inprogress-border);
+  --color-status-done: var(--status-done-bg);
+  --color-status-done-fg: var(--status-done-fg);
+  --color-status-done-border: var(--status-done-border);
 }
 
 :root {
@@ -85,6 +93,14 @@
   --shadow-spread: 0px;
   --shadow-opacity: 0.1;
   --shadow-color: #000000;
+  --status-todo: var(--muted);
+  --status-todo-fg: var(--muted-foreground);
+  --status-inprogress-bg: #3b82f61a;
+  --status-inprogress-fg: #2563eb;
+  --status-inprogress-border: #bfdbfe;
+  --status-done-bg: #22c55e1a;
+  --status-done-fg: #16a34a;
+  --status-done-border: #bbf7d0;
 }
 
 .dark {
@@ -119,12 +135,17 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.8 0.16 80);
+  --status-inprogress-fg: #60a5fa;
+  --status-inprogress-border: #1e40af;
+  --status-done-fg: #4ade80;
+  --status-done-border: #166534;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

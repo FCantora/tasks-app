@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react"
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input, Label, RadioGroup, RadioGroupItem, Textarea } from "./ui"
+import { Button, Calendar, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input, Label, Popover, PopoverContent, PopoverTrigger, RadioGroup, RadioGroupItem, Textarea } from "./ui"
 import { Task, TaskStatus } from "@/lib/types/task"
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+// Added import
+import { toast } from "sonner"
+import { createTaskSchema } from "@/lib/schemas/task"
 
 export interface CreateTaskInput {
     title: string
@@ -23,38 +29,68 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
     const [description, setDescription] = useState("")
     const [status, setStatus] = useState<TaskStatus>("todo")
     const [dueDate, setDueDate] = useState("")
+    const [startDate, setStartDate] = useState("")
+    const [endDate, setEndDate] = useState("")
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-    if (task) {
-      setTitle(task.title)
-      setDescription(task.description || "")
-      setStatus(task.status)
-      setDueDate(task.due_date ? task.due_date.split("T")[0] : "")
-    } else {
-      setTitle("")
-      setDescription("")
-      setStatus("todo")
-      setDueDate("")
-    }
-  }, [task, open])
+        if (task) {
+            setTitle(task.title)
+            setDescription(task.description || "")
+            setStatus(task.status)
+            setDueDate(task.due_date ? task.due_date.split("T")[0] : "")
+            setStartDate(task.start_date ? task.start_date.split("T")[0] : "")
+            setEndDate(task.end_date ? task.end_date.split("T")[0] : "")
+        } else {
+            setTitle("")
+            setDescription("")
+            setStatus("todo")
+            setDueDate("")
+            setStartDate("")
+            setEndDate("")
+        }
+    }, [task, open])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
 
-    try {
-      await onSave({
-        title,
-        description: description || undefined,
-        status,
-        due_date: dueDate || undefined,
-      })
-      onOpenChange(false)
-    } finally {
-      setLoading(false)
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setLoading(true)
+
+        const formData = {
+            title,
+            description: description || undefined,
+            status,
+            due_date: dueDate || undefined,
+            start_date: startDate || undefined,
+            end_date: endDate || undefined,
+        }
+
+        const result = createTaskSchema.safeParse(formData)
+
+        if (!result.success) {
+            const errorMessage = result.error.issues[0].message
+            toast.error("Invalid Date Range", {
+                description: errorMessage
+            })
+            setLoading(false)
+            return
+        }
+
+        try {
+            await onSave({
+                title,
+                description: description || undefined,
+                status,
+                due_date: dueDate || undefined,
+                start_date: startDate || undefined,
+                end_date: endDate || undefined,
+            })
+            onOpenChange(false)
+        } finally {
+            setLoading(false)
+        }
     }
-  }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -71,6 +107,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             required
+                            maxLength={100}
                             disabled={loading}
                             className="h-11"
                         />
@@ -89,47 +126,124 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label>Status</Label>
-                        <RadioGroup
-                            value={status}
-                            onValueChange={(value) => setStatus(value as TaskStatus)}
-                            className="flex flex-col sm:flex-row gap-3 sm:gap-4"
-                        >
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="todo" id="todo" disabled={loading} />
-                                <Label htmlFor="todo" className="font-normal cursor-pointer">
-                                    To Do
-                                </Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Planning</Label>
+                            <div className="space-y-4 rounded-lg border p-3">
+                                <div className="space-y-2 flex flex-col">
+                                    <Label className="text-xs text-muted-foreground">Estimated Start</Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                    "w-full justify-start text-left font-normal",
+                                                    !startDate && "text-muted-foreground"
+                                                )}
+                                                disabled={loading}
+                                            >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {startDate ? format(new Date(startDate), "PPP") : <span>Pick a date</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={startDate ? new Date(startDate) : undefined}
+                                                onSelect={(date) => setStartDate(date ? date.toISOString() : "")}
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <div className="space-y-2 flex flex-col">
+                                    <Label className="text-xs text-muted-foreground">Due Date</Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                    "w-full justify-start text-left font-normal",
+                                                    !dueDate && "text-muted-foreground"
+                                                )}
+                                                disabled={loading}
+                                            >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {dueDate ? format(new Date(dueDate), "PPP") : <span>Pick a date</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={dueDate ? new Date(dueDate) : undefined}
+                                                onSelect={(date) => setDueDate(date ? date.toISOString() : "")}
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="in_progress" id="in_progress" disabled={loading} />
-                                <Label htmlFor="in_progress" className="font-normal cursor-pointer">
-                                    In Progress
-                                </Label>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Status & Actuals</Label>
+                            <div className="space-y-4 rounded-lg border p-3 h-full">
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-muted-foreground">Current Status</Label>
+                                    <RadioGroup
+                                        value={status}
+                                        onValueChange={(value) => setStatus(value as TaskStatus)}
+                                        className="flex flex-col space-y-1"
+                                        disabled={loading}
+                                    >
+                                        <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="todo" id="todo" />
+                                            <Label htmlFor="todo">To Do</Label>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="in_progress" id="in_progress" />
+                                            <Label htmlFor="in_progress">In Progress</Label>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="done" id="done" />
+                                            <Label htmlFor="done">Done</Label>
+                                        </div>
+                                    </RadioGroup>
+                                </div>
+
+                                {(status === "done" || task) && (
+                                    <div className="space-y-2 pt-2 border-t mt-2 flex flex-col">
+                                        <Label className="text-xs text-muted-foreground">Actual Completion</Label>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-full justify-start text-left font-normal",
+                                                        !endDate && "text-muted-foreground"
+                                                    )}
+                                                    disabled={loading}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {endDate ? format(new Date(endDate), "PPP") : <span>Pick a date</span>}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={endDate ? new Date(endDate) : undefined}
+                                                    onSelect={(date) => setEndDate(date ? date.toISOString() : "")}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                    </div>
+                                )}
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="done" id="done" disabled={loading} />
-                                <Label htmlFor="done" className="font-normal cursor-pointer">
-                                    Done
-                                </Label>
-                            </div>
-                        </RadioGroup>
+                        </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="due_date">Due Date</Label>
-                        <Input
-                            id="due_date"
-                            type="date"
-                            value={dueDate}
-                            onChange={(e) => setDueDate(e.target.value)}
-                            disabled={loading}
-                            className="h-11"
-                        />
-                    </div>
-
-                    <DialogFooter className="gap-2 sm:gap-0 flex-col sm:flex-row">
+                    <DialogFooter className="gap-2 pt-6 flex-col sm:flex-row">
                         <Button
                             type="button"
                             variant="outline"

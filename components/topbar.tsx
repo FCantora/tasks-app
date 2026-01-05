@@ -3,19 +3,10 @@
 import { ListTodo, LogOut, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { ThemeToggle } from "./theme-toggle";
-import { useRouter } from "next/navigation";
-import { authService } from "@/app/api/auth";
-import { useState } from "react";
+import { useUserSession } from "@/hooks/use-user-session";
 
 export const Topbar = () => {
-    const router = useRouter()
-    const [loading, setLoading] = useState(false)
-
-    const logout = async () => {
-        setLoading(true)
-        await authService.signOut()
-        router.push("/login")
-    }
+    const { userEmail, loading, logout } = useUserSession();
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="container max-w-7xl mx-auto flex h-16 items-center justify-between px-4">
@@ -27,6 +18,11 @@ export const Topbar = () => {
                 </div>
 
                 <div className="flex items-center gap-1 sm:gap-2">
+                    {userEmail && (
+                        <span className="text-xs sm:text-sm text-muted-foreground mr-2">
+                            {userEmail}
+                        </span>
+                    )}
                     <ThemeToggle />
                     <Button
                         variant="ghost"

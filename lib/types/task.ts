@@ -14,14 +14,14 @@ export interface Task {
 }
 
 export interface CreateTaskInput {
-  title: string
-  description?: string
-  status?: TaskStatus
-  due_date?: string
-  start_date?: string
-  end_date?: string
+    title: string
+    description?: string | null
+    status?: TaskStatus
+    due_date?: string | null
+    start_date?: string | null
+    end_date?: string | null
 }
 
 export interface UpdateTaskInput extends Partial<CreateTaskInput> {
-  is_completed?: boolean
+    is_completed?: boolean
 }

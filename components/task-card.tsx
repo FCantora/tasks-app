@@ -1,27 +1,15 @@
-import { Calendar, Edit2, Trash2 } from "lucide-react"
-import { Badge } from "./ui/badge"
-import { Card, CardContent, CardFooter, CardHeader } from "./ui/card"
-import { Checkbox } from "./ui/checkbox"
-import { Button } from "./ui/button"
+import { Calendar, CheckCircle2, Clock, Pencil, Trash2 } from "lucide-react"
+import { Badge, Button, Card, CardContent, CardFooter, CardHeader, Checkbox } from "./ui"
 import { Task } from "@/lib/types/task"
+import { cn } from "@/lib/utils"
+import { TASK_STATUS_COLORS, TASK_STATUS_LABELS } from "@/lib/constants/tasks"
+import { formatDate, isOverdue } from "@/lib/date"
 
 interface Props {
     task: Task
     onEdit: (task: Task) => void
     onDelete: (taskId: string) => void
     onToggleComplete: (taskId: string, isCompleted: boolean) => void
-}
-
-const statusColors = {
-    todo: "bg-muted text-muted-foreground",
-    in_progress: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800",
-    done: "bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800",
-}
-
-const statusLabels = {
-    todo: "To Do",
-    in_progress: "In Progress",
-    done: "Done",
 }
 
 export const TaskCard = ({ task, onEdit, onDelete, onToggleComplete }: Props) => {
@@ -40,8 +28,8 @@ export const TaskCard = ({ task, onEdit, onDelete, onToggleComplete }: Props) =>
                         >
                             {task.title}
                         </h3>
-                        <Badge className={statusColors[task.status]} variant="secondary">
-                            {statusLabels[task.status]}
+                        <Badge className={TASK_STATUS_COLORS[task.status]} variant="secondary">
+                            {TASK_STATUS_LABELS[task.status]}
                         </Badge>
                     </div>
                 </div>
@@ -52,32 +40,71 @@ export const TaskCard = ({ task, onEdit, onDelete, onToggleComplete }: Props) =>
                 </CardContent>
             )}
             <CardFooter className="flex items-center justify-between pt-3 border-t mt-auto">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
-                    <span className="truncate">
-                        {new Date(task.created_at).toLocaleDateString("en-US", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                        })}
-                    </span>
-                </div>
-                <div className="flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onEdit(task)}>
-                        <Edit2 className="h-4 w-4" />
-                        <span className="sr-only">Edit task</span>
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        onClick={() => onDelete(task.id)}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete task</span>
-                    </Button>
-                </div>
+                <TaskDates task={task} />
+                <TaskActions task={task} onEdit={onEdit} onDelete={onDelete} />
             </CardFooter>
         </Card>
+    )
+}
+
+const TaskDates = ({ task }: { task: Task }) => {
+    return (
+        <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
+                <span className="truncate">
+                    Start: {formatDate(task.start_date || task.created_at)}
+                </span>
+            </div>
+
+            {task.status === "done" && task.end_date ? (
+                <div className="flex items-center gap-1.5 font-medium text-green-600 dark:text-green-500">
+                    <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span className="truncate">
+                        Completed: {formatDate(task.end_date)}
+                    </span>
+                </div>
+            ) : (
+                task.due_date && (
+                    <div className={cn("flex items-center gap-1.5 font-medium",
+                        isOverdue(task.due_date) ? "text-red-600 dark:text-red-500" : "text-amber-600 dark:text-amber-500"
+                    )}>
+                        <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+                        <span className="truncate">
+                            {isOverdue(task.due_date) ? "Overdue: " : "Due: "}
+                            {formatDate(task.due_date)}
+                        </span>
+                    </div>
+                )
+            )}
+        </div>
+    )
+}
+
+const TaskActions = ({
+    task,
+    onEdit,
+    onDelete
+}: {
+    task: Task
+    onEdit: (task: Task) => void
+    onDelete: (taskId: string) => void
+}) => {
+    return (
+        <div className="flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => onEdit(task)}>
+                <Pencil className="h-4 w-4" />
+                <span className="sr-only">Edit</span>
+            </Button>
+            <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                onClick={() => onDelete(task.id)}
+            >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Delete</span>
+            </Button>
+        </div>
     )
 }
