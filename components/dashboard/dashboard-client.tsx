@@ -84,6 +84,12 @@ export function DashboardClient({ initialTasks }: DashboardClientProps) {
         }
     }
 
+    const resetFilters = () => {
+        setStatusFilter("all")
+        setSearchQuery("")
+        setSortBy("created_desc")
+    }
+
     return (
         <main className="bg-background flex flex-col min-h-[calc(100vh-4rem)]">
             <div className="container max-w-7xl mx-auto px-4 py-6 sm:py-8">
@@ -130,8 +136,7 @@ export function DashboardClient({ initialTasks }: DashboardClientProps) {
                             onSearchChange={setSearchQuery}
                             sortBy={sortBy}
                             onSortChange={setSortBy}
-                            hideSort={view === DashboardView.TIMELINE}
-                            hideStatusFilter={view === DashboardView.KANBAN}
+                            onReset={resetFilters}
                         />
                     </div>
 
@@ -183,6 +188,7 @@ export function DashboardClient({ initialTasks }: DashboardClientProps) {
                                     onDelete={openDeleteAlert}
                                     onToggleComplete={toggleComplete}
                                     onUpdateStatus={updateStatus}
+                                    statusFilter={statusFilter}
                                 />
                             </TabsContent>
                             <TabsContent value={DashboardView.TIMELINE}>

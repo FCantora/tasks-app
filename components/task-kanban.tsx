@@ -13,15 +13,16 @@ interface Props {
     onDelete: (taskId: string) => void
     onToggleComplete: (taskId: string, isCompleted: boolean) => void
     onUpdateStatus: (taskId: string, status: TaskStatus) => void
+    statusFilter?: TaskStatus | "all"
 }
 
-const columns = TASK_STATUSES.map((status) => ({
+const columnsDefinitions = TASK_STATUSES.map((status) => ({
     id: status,
     title: TASK_STATUS_LABELS[status],
     color: TASK_STATUS_COLORS[status],
 }))
 
-export const TaskKanban = ({ tasks, onEdit, onDelete, onToggleComplete, onUpdateStatus }: Props) => {
+export const TaskKanban = ({ tasks, onEdit, onDelete, onToggleComplete, onUpdateStatus, statusFilter = "all" }: Props) => {
     const {
         draggedTaskId,
         dragOverColumn,
@@ -31,9 +32,13 @@ export const TaskKanban = ({ tasks, onEdit, onDelete, onToggleComplete, onUpdate
         handleDrop
     } = useKanbanDrag({ onUpdateStatus })
 
+    const visibleColumns = statusFilter === "all"
+        ? columnsDefinitions
+        : columnsDefinitions.filter(col => col.id === statusFilter)
+
     return (
         <div className="flex h-full gap-4 overflow-x-auto pb-4">
-            {columns.map((column) => (
+            {visibleColumns.map((column) => (
                 <KanbanColumn
                     key={column.id}
                     column={column}

@@ -22,17 +22,6 @@ export const useTimelineCalculations = (tasks: Task[]) => {
                 effectiveStart: start,
                 effectiveEnd: end,
             }
-        }).sort((a, b) => {
-            // 1. Sort by Start Date (Earliest first)
-            const startDiff = a.effectiveStart.getTime() - b.effectiveStart.getTime()
-            if (startDiff !== 0) return startDiff
-
-            // 2. Sort by End Date Ascending
-            const endDiff = a.effectiveEnd.getTime() - b.effectiveEnd.getTime()
-            if (endDiff !== 0) return endDiff
-
-            // 3. Alphabetical fallback
-            return a.title.localeCompare(b.title)
         })
     }, [tasks])
 

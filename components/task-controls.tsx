@@ -1,13 +1,12 @@
 "use client";
 
-import { CheckCircle2, Circle, Clock, Search } from "lucide-react"
+import { CheckCircle2, Circle, Clock, RotateCcw, Search } from "lucide-react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { TaskStatus } from "@/lib/types/task"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 
 export type SortOption = "date_desc" | "date_asc" | "created_desc" | "created_asc"
-
-
 
 const filters = [
     { value: "all", label: "All", icon: Circle },
@@ -23,8 +22,7 @@ interface Props {
     onSearchChange: (query: string) => void
     sortBy: SortOption
     onSortChange: (sort: SortOption) => void
-    hideSort?: boolean
-    hideStatusFilter?: boolean
+    onReset: () => void
 }
 
 export const TaskControls = ({
@@ -34,64 +32,76 @@ export const TaskControls = ({
     onSearchChange,
     sortBy,
     onSortChange,
-    hideSort = false,
-    hideStatusFilter = false,
+    onReset,
 }: Props) => {
+    const isFiltered = statusFilter !== "all" || searchQuery !== "" || sortBy !== "created_desc"
+
     return (
-        <div className="flex flex-col sm:flex-row gap-4 justify-between">
-            {!hideStatusFilter ? (
-                <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-medium text-muted-foreground mr-1 hidden sm:inline">Filter:</span>
-                    {filters.map((filter) => {
-                        const Icon = filter.icon
-                        const isActive = statusFilter === filter.value
-                        return (
-                            <Button
-                                key={filter.value}
-                                variant={isActive ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => onStatusFilterChange(filter.value)}
-                                className={`h-9 px-3 font-medium transition-all ${isActive ? "shadow-sm" : "hover:border-primary/50"}`}
-                            >
-                                <Icon className="h-4 w-4 mr-1.5" />
-                                <span>{filter.label}</span>
-                            </Button>
-                        )
-                    })}
-                </div>
-            ) : (
-                /* Spacer to keep Search aligned to the right if needed, or just let justify-between handle it */
-                /* If we want Search on the left when filters are hidden, we don't need this.
-                   But if we want Search to fill space or be on the left, simply omitting the div is enough for justify-between with 2 items.
-                   However, if we want strict "Search ... Sort", removing this div leaves 2 items: Search and Sort.
-                   justify-between will put Search at start, Sort at end. This matches "justificado between".
-                */
-                null
-            )}
-            <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    placeholder="Search tasks..."
-                    value={searchQuery}
-                    onChange={(e) => onSearchChange(e.target.value)}
-                    className="pl-9 h-9"
-                />
+        <div className="px-2 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2 w-full sm:w-auto">
+                <span className="text-sm font-medium text-muted-foreground mr-1 hidden sm:inline">Filter:</span>
+                {filters.map((filter) => {
+                    const Icon = filter.icon
+                    const isActive = statusFilter === filter.value
+                    return (
+                        <Button
+                            key={filter.value}
+                            variant={isActive ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => onStatusFilterChange(filter.value)}
+                            className={`h-9 px-3 font-medium transition-all ${isActive ? "shadow-sm" : "hover:border-primary/50"}`}
+                        >
+                            <Icon className="h-4 w-4 mr-1.5" />
+                            <span>{filter.label}</span>
+                        </Button>
+                    )
+                })}
             </div>
-            {!hideSort && (
-                <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-muted-foreground whitespace-nowrap">Sort by:</label>
-                    <select
-                        value={sortBy}
-                        onChange={(e) => onSortChange(e.target.value as SortOption)}
-                        className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                    >
-                        <option value="created_desc">Newest First</option>
-                        <option value="created_asc">Oldest First</option>
-                        <option value="date_desc">Due Date (Far)</option>
-                        <option value="date_asc">Due Date (Soon)</option>
-                    </select>
+
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto items-center flex-1 justify-end">
+                {/* Search */}
+                <div className="relative w-full sm:max-w-[200px]">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                        className="pl-9 h-9"
+                    />
                 </div>
-            )}
+
+                {/* Sort */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <label className="text-sm font-medium text-muted-foreground whitespace-nowrap hidden sm:inline">Sort:</label>
+                    <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
+                        <SelectTrigger className="w-full sm:w-[150px] h-9">
+                            <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="created_desc">Newest</SelectItem>
+                            <SelectItem value="created_asc">Oldest</SelectItem>
+                            <SelectItem value="date_desc">Due Date (Far)</SelectItem>
+                            <SelectItem value="date_asc">Due Date (Soon)</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {/* Separator */}
+                <div className="h-6 w-px bg-border hidden sm:block sm:ml-5" />
+
+                {/* Reset */}
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onReset}
+                    disabled={!isFiltered}
+                    className="h-9 w-auto px-2 sm:px-0 sm:w-9 text-muted-foreground hover:text-foreground shrink-0"
+                    title="Reset filters"
+                >
+                    <RotateCcw className={`h-4 w-4 ${isFiltered ? "text-primary hover:text-primary/80" : ""}`} />
+                    <span className="ml-2 sm:hidden text-xs">Reset all filters</span>
+                </Button>
+            </div>
         </div>
     )
 }
