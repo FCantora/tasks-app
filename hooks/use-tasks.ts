@@ -9,7 +9,9 @@ export function useTasks(initialTasks?: Task[]) {
     const [tasks, setTasks] = useState<Task[]>(initialTasks || [])
     const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all")
     const [searchQuery, setSearchQuery] = useState("")
-    const [sortBy, setSortBy] = useState<"date_desc" | "date_asc" | "created_desc" | "created_asc">("created_desc")
+    const [sortBy, setSortBy] = useState<
+        "date_desc" | "date_asc" | "created_desc" | "created_asc"
+    >("created_desc")
     const [loading, setLoading] = useState(!initialTasks)
 
     // Helper for centralized async handling
@@ -38,7 +40,8 @@ export function useTasks(initialTasks?: Task[]) {
 
             return data
         } catch (err: unknown) {
-            const errorMessage = err instanceof Error ? err.message : "Unknown error"
+            const errorMessage =
+                err instanceof Error ? err.message : "Unknown error"
             toast.error(options.errorTitle || "An error occurred", {
                 description: errorMessage,
             })
@@ -59,7 +62,8 @@ export function useTasks(initialTasks?: Task[]) {
             if (error) throw error
             setTasks(data || [])
         } catch (err: unknown) {
-            const errorMessage = err instanceof Error ? err.message : "Unknown error"
+            const errorMessage =
+                err instanceof Error ? err.message : "Unknown error"
             toast.error("Error fetching tasks", { description: errorMessage })
         } finally {
             setLoading(false)
@@ -80,7 +84,8 @@ export function useTasks(initialTasks?: Task[]) {
             result = result.filter(
                 (task) =>
                     task.title.toLowerCase().includes(query) ||
-                    (task.description && task.description.toLowerCase().includes(query))
+                    (task.description &&
+                        task.description.toLowerCase().includes(query))
             )
         }
 
@@ -90,15 +95,27 @@ export function useTasks(initialTasks?: Task[]) {
                 case "date_asc":
                     if (!a.due_date) return 1
                     if (!b.due_date) return -1
-                    return new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+                    return (
+                        new Date(a.due_date).getTime() -
+                        new Date(b.due_date).getTime()
+                    )
                 case "date_desc":
                     if (!a.due_date) return 1
                     if (!b.due_date) return -1
-                    return new Date(b.due_date).getTime() - new Date(a.due_date).getTime()
+                    return (
+                        new Date(b.due_date).getTime() -
+                        new Date(a.due_date).getTime()
+                    )
                 case "created_asc":
-                    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                    return (
+                        new Date(a.created_at).getTime() -
+                        new Date(b.created_at).getTime()
+                    )
                 case "created_desc":
-                    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                    return (
+                        new Date(b.created_at).getTime() -
+                        new Date(a.created_at).getTime()
+                    )
                 default:
                     return 0
             }
@@ -108,46 +125,38 @@ export function useTasks(initialTasks?: Task[]) {
     }, [tasks, statusFilter, searchQuery, sortBy])
 
     const createTask = async (input: CreateTaskInput) => {
-        return performAction(
-            () => taskService.createTask(input),
-            {
-                successTitle: "Task created",
-                successDesc: "Your task has been created successfully.",
-                errorTitle: "Error creating task",
-                onSuccess: (data) => setTasks([data!, ...tasks]),
-            }
-        )
+        return performAction(() => taskService.createTask(input), {
+            successTitle: "Task created",
+            successDesc: "Your task has been created successfully.",
+            errorTitle: "Error creating task",
+            onSuccess: (data) => setTasks([data!, ...tasks]),
+        })
     }
 
     const updateTask = async (taskId: string, input: CreateTaskInput) => {
-        return performAction(
-            () => taskService.updateTask(taskId, input),
-            {
-                successTitle: "Task updated",
-                successDesc: "Your task has been updated successfully.",
-                errorTitle: "Error updating task",
-                onSuccess: (data) => setTasks(tasks.map((t) => (t.id === taskId ? data! : t))),
-            }
-        )
+        return performAction(() => taskService.updateTask(taskId, input), {
+            successTitle: "Task updated",
+            successDesc: "Your task has been updated successfully.",
+            errorTitle: "Error updating task",
+            onSuccess: (data) =>
+                setTasks(tasks.map((t) => (t.id === taskId ? data! : t))),
+        })
     }
 
     const deleteTask = async (taskId: string) => {
-        return performAction(
-            () => taskService.deleteTask(taskId),
-            {
-                successTitle: "Task deleted",
-                successDesc: "Your task has been deleted successfully.",
-                errorTitle: "Error deleting task",
-                onSuccess: () => setTasks(tasks.filter((t) => t.id !== taskId)),
-            }
-        )
+        return performAction(() => taskService.deleteTask(taskId), {
+            successTitle: "Task deleted",
+            successDesc: "Your task has been deleted successfully.",
+            errorTitle: "Error deleting task",
+            onSuccess: () => setTasks(tasks.filter((t) => t.id !== taskId)),
+        })
     }
 
     const toggleComplete = async (taskId: string, isCompleted: boolean) => {
         const updates = {
             is_completed: isCompleted,
             status: (isCompleted ? "done" : "todo") as TaskStatus,
-            end_date: isCompleted ? new Date().toISOString() : null
+            end_date: isCompleted ? new Date().toISOString() : null,
         }
 
         // Optimistic update
@@ -155,10 +164,9 @@ export function useTasks(initialTasks?: Task[]) {
         setTasks(tasks.map((t) => (t.id === taskId ? { ...t, ...updates } : t)))
 
         try {
-            await performAction(
-                () => taskService.updateTask(taskId, updates),
-                { errorTitle: "Error updating task" }
-            )
+            await performAction(() => taskService.updateTask(taskId, updates), {
+                errorTitle: "Error updating task",
+            })
         } catch {
             setTasks(previousTasks) // Revert on error
         }
@@ -169,7 +177,7 @@ export function useTasks(initialTasks?: Task[]) {
         const updates = {
             status,
             is_completed: isCompleted,
-            end_date: isCompleted ? new Date().toISOString() : null
+            end_date: isCompleted ? new Date().toISOString() : null,
         }
 
         // Optimistic update
@@ -177,10 +185,9 @@ export function useTasks(initialTasks?: Task[]) {
         setTasks(tasks.map((t) => (t.id === taskId ? { ...t, ...updates } : t)))
 
         try {
-            await performAction(
-                () => taskService.updateTask(taskId, updates),
-                { errorTitle: "Error updating task status" }
-            )
+            await performAction(() => taskService.updateTask(taskId, updates), {
+                errorTitle: "Error updating task status",
+            })
         } catch {
             setTasks(previousTasks) // Revert on error
         }
@@ -201,6 +208,6 @@ export function useTasks(initialTasks?: Task[]) {
         deleteTask,
         toggleComplete,
         updateStatus,
-        refreshTasks: fetchTasks
+        refreshTasks: fetchTasks,
     }
 }

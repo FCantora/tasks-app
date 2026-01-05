@@ -8,12 +8,12 @@ export function useAuthForm() {
     const [isSignUp, setIsSignUp] = useState(false)
     const [formData, setFormData] = useState({
         email: "",
-        password: ""
+        password: "",
     })
     const [status, setStatus] = useState({
         loading: false,
         error: null as string | null,
-        success: null as string | null
+        success: null as string | null,
     })
     const router = useRouter()
 
@@ -23,22 +23,39 @@ export function useAuthForm() {
 
         try {
             if (isSignUp) {
-                const { data, error } = await authService.signUp(formData.email, formData.password)
+                const { data, error } = await authService.signUp(
+                    formData.email,
+                    formData.password
+                )
 
                 if (error) throw error
+
+                // Check if user already exists (Supabase returns empty identities for existing users to prevent enumeration)
+                if (
+                    data.user &&
+                    data.user.identities &&
+                    data.user.identities.length === 0
+                ) {
+                    throw new Error(
+                        "This email is already registered. Please sign in."
+                    )
+                }
 
                 if (data?.needsConfirmation) {
                     setStatus({
                         loading: false,
                         error: null,
-                        success: "Check your email to confirm your account!"
+                        success: "Check your email to confirm your account!",
                     })
                 } else {
                     router.push("/dashboard")
                     router.refresh()
                 }
             } else {
-                const { error } = await authService.signIn(formData.email, formData.password)
+                const { error } = await authService.signIn(
+                    formData.email,
+                    formData.password
+                )
 
                 if (error) throw error
 
@@ -49,7 +66,7 @@ export function useAuthForm() {
             setStatus({
                 loading: false,
                 error: err instanceof Error ? err.message : "An error occurred",
-                success: null
+                success: null,
             })
         }
     }
@@ -60,9 +77,9 @@ export function useAuthForm() {
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [e.target.id]: e.target.value
+            [e.target.id]: e.target.value,
         }))
     }
 
@@ -72,6 +89,6 @@ export function useAuthForm() {
         status,
         handleAuth,
         toggleMode,
-        handleChange
+        handleChange,
     }
 }

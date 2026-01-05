@@ -7,16 +7,18 @@ A modern, responsive Task Management Application built with **Next.js 15** and *
 ## 🚀 Features
 
 ### Core
+
 - **Authentication**: Secure Sign up and Sign in using Supabase Auth.
 - **Task Management**: Create, Read, Update, and Delete tasks.
 - **Views**:
-  - **List View**: detailed list of tasks.
-  - **Kanban Board**: Drag-and-drop style status management (visual only).
-  - **Timeline**: Calendar-based view for scheduling.
+    - **List View**: detailed list of tasks.
+    - **Kanban Board**: Drag-and-drop style status management (visual only).
+    - **Timeline**: Calendar-based view for scheduling.
 - **Status Tracking**: Mark tasks as Todo, In Progress, or Done.
 - **Data Integrity**: Robust validation with Zod (Start date < Due date, etc.) and auto-completion dates.
 
 ### Enhancements
+
 - ⚡ **Optimistic UI**: Instant feedback on user actions (creating, updating, deleting tasks) before server confirmation.
 - 🎨 **Modern Design**: Built with Tailwind CSS v4 and a custom premium UI kit.
 - 🔍 **Search & Filter**: Real-time filtering by status and text search.
@@ -37,39 +39,44 @@ A modern, responsive Task Management Application built with **Next.js 15** and *
 ## 🏁 Getting Started
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - A Supabase account
 
 ### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/tasks-app.git
-   cd tasks-app
-   ```
+
+    ```bash
+    git clone https://github.com/yourusername/tasks-app.git
+    cd tasks-app
+    ```
 
 2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+
+    ```bash
+    npm install
+    ```
 
 3. **Configure Environment Variables**
    Rename `.env.example` to `.env.local` and fill in your Supabase credentials:
-   ```bash
-   cp .env.example .env.local
-   ```
-   
-   Open `.env.local` and add your keys:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+
+    ```bash
+    cp .env.example .env.local
+    ```
+
+    Open `.env.local` and add your keys:
+
+    ```env
+    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+    ```
 
 4. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) with your browser.
+    ```bash
+    npm run dev
+    ```
+    Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ## 🗄️ Database Schema
 
@@ -116,9 +123,19 @@ create policy "Users can delete their own tasks" on tasks
 - **Optimistic Updates**: Implemented optimistic updates in `useTasks` hook to ensure the app feels snappy and native-like, masking network latency.
 - **Zod Validation**: Used schemas for strict frontend validation to prevent inconsistent data states (e.g. invalid date ranges).
 
+## 🛡️ Security & Spam Protection
+
+- **Rate Limiting**: Supabase Auth has built-in rate limiting (using Netfilter) to prevent abuse of the authentication endpoints.
+- **Enumeration Protection**: The API is designed to not leak user existence (returning fake success responses) to prevent email enumeration attacks.
+- **Future Enhancements**:
+    - **Captcha**: Integrate Turnstile or hCaptcha on the login/signup forms for an extra layer of protection against bots.
+    - **Advanced Monitoring**: Configure Supabase Auth Logs to track failed login attempts and implement a "fail2ban" style IP blocking mechanism in the middleware or using Supabase Edge Functions.
+
 ## 🔮 Future Improvements
 
 With more time, I would consider adding:
+
 - **Drag and Drop**: Full `dnd-kit` integration for the Kanban board to allow updating status by dragging.
 - **Recurrence**: Add support for recurring tasks (daily, weekly).
+- **User Roles**: Implement a role-based system (Admin/User) to allow a Superadmin to ban abusive users or manage platform content.
 - **Testing**: Add Jest and React Testing Library for unit tests, and Playwright for E2E testing.

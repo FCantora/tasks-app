@@ -8,7 +8,8 @@ export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
 
 export const TASK_STATUS_COLORS: Record<TaskStatus, string> = {
     todo: "bg-status-todo text-status-todo-fg",
-    in_progress: "bg-status-inprogress text-status-inprogress-fg border-status-inprogress-border",
+    in_progress:
+        "bg-status-inprogress text-status-inprogress-fg border-status-inprogress-border",
     done: "bg-status-done text-status-done-fg border-status-done-border",
 }
 

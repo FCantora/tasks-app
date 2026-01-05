@@ -3,7 +3,9 @@ import { DashboardClient } from "@/components/dashboard/dashboard-client"
 
 export default async function DashboardPage() {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
 
     // We already check for user in middleware, but for TS safety
     if (!user) {

@@ -1,12 +1,22 @@
-"use client";
+"use client"
 
 import { CheckCircle2, Circle, Clock, RotateCcw, Search } from "lucide-react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { TaskStatus } from "@/lib/types/task"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "./ui/select"
 
-export type SortOption = "date_desc" | "date_asc" | "created_desc" | "created_asc"
+export type SortOption =
+    | "date_desc"
+    | "date_asc"
+    | "created_desc"
+    | "created_asc"
 
 const filters = [
     { value: "all", label: "All", icon: Circle },
@@ -34,12 +44,17 @@ export const TaskControls = ({
     onSortChange,
     onReset,
 }: Props) => {
-    const isFiltered = statusFilter !== "all" || searchQuery !== "" || sortBy !== "created_desc"
+    const isFiltered =
+        statusFilter !== "all" ||
+        searchQuery !== "" ||
+        sortBy !== "created_desc"
 
     return (
-        <div className="px-2 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <div className="flex flex-wrap items-center justify-between gap-2 w-full sm:w-auto">
-                <span className="text-sm font-medium text-muted-foreground mr-1 hidden sm:inline">Filter:</span>
+        <div className="flex flex-col items-start justify-between gap-4 px-2 sm:flex-row sm:items-center">
+            <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto">
+                <span className="text-muted-foreground mr-1 hidden text-sm font-medium sm:inline">
+                    Filter:
+                </span>
                 {filters.map((filter) => {
                     const Icon = filter.icon
                     const isActive = statusFilter === filter.value
@@ -51,43 +66,54 @@ export const TaskControls = ({
                             onClick={() => onStatusFilterChange(filter.value)}
                             className={`h-9 px-3 font-medium transition-all ${isActive ? "shadow-sm" : "hover:border-primary/50"}`}
                         >
-                            <Icon className="h-4 w-4 mr-1.5" />
+                            <Icon className="mr-1.5 h-4 w-4" />
                             <span>{filter.label}</span>
                         </Button>
                     )
                 })}
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto items-center flex-1 justify-end">
+            <div className="flex w-full flex-1 flex-col items-center justify-end gap-2 sm:w-auto sm:flex-row">
                 {/* Search */}
                 <div className="relative w-full sm:max-w-[200px]">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
                     <Input
                         placeholder="Search..."
                         value={searchQuery}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        className="pl-9 h-9"
+                        className="h-9 pl-9"
                     />
                 </div>
 
                 {/* Sort */}
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <label className="text-sm font-medium text-muted-foreground whitespace-nowrap hidden sm:inline">Sort:</label>
-                    <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
-                        <SelectTrigger className="w-full sm:w-[150px] h-9">
+                <div className="flex w-full items-center gap-2 sm:w-auto">
+                    <label className="text-muted-foreground hidden text-sm font-medium whitespace-nowrap sm:inline">
+                        Sort:
+                    </label>
+                    <Select
+                        value={sortBy}
+                        onValueChange={(value) =>
+                            onSortChange(value as SortOption)
+                        }
+                    >
+                        <SelectTrigger className="h-9 w-full sm:w-[150px]">
                             <SelectValue placeholder="Sort by" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="created_desc">Newest</SelectItem>
                             <SelectItem value="created_asc">Oldest</SelectItem>
-                            <SelectItem value="date_desc">Due Date (Far)</SelectItem>
-                            <SelectItem value="date_asc">Due Date (Soon)</SelectItem>
+                            <SelectItem value="date_desc">
+                                Due Date (Far)
+                            </SelectItem>
+                            <SelectItem value="date_asc">
+                                Due Date (Soon)
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
 
                 {/* Separator */}
-                <div className="h-6 w-px bg-border hidden sm:block sm:ml-5" />
+                <div className="bg-border hidden h-6 w-px sm:ml-5 sm:block" />
 
                 {/* Reset */}
                 <Button
@@ -95,11 +121,15 @@ export const TaskControls = ({
                     size="icon"
                     onClick={onReset}
                     disabled={!isFiltered}
-                    className="h-9 w-auto px-2 sm:px-0 sm:w-9 text-muted-foreground hover:text-foreground shrink-0"
+                    className="text-muted-foreground hover:text-foreground h-9 w-auto shrink-0 px-2 sm:w-9 sm:px-0"
                     title="Reset filters"
                 >
-                    <RotateCcw className={`h-4 w-4 ${isFiltered ? "text-primary hover:text-primary/80" : ""}`} />
-                    <span className="ml-2 sm:hidden text-xs">Reset all filters</span>
+                    <RotateCcw
+                        className={`h-4 w-4 ${isFiltered ? "text-primary hover:text-primary/80" : ""}`}
+                    />
+                    <span className="ml-2 text-xs sm:hidden">
+                        Reset all filters
+                    </span>
                 </Button>
             </div>
         </div>

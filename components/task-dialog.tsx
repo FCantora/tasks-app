@@ -1,5 +1,21 @@
 import { useEffect, useState } from "react"
-import { Button, Calendar, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input, Label, Popover, PopoverContent, PopoverTrigger, RadioGroup, RadioGroupItem, Textarea } from "./ui"
+import {
+    Button,
+    Calendar,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    Input,
+    Label,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+    RadioGroup,
+    RadioGroupItem,
+    Textarea,
+} from "./ui"
 import { Task, TaskStatus } from "@/lib/types/task"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
@@ -51,8 +67,6 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
         }
     }, [task, open])
 
-
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
@@ -71,7 +85,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
         if (!result.success) {
             const errorMessage = result.error.issues[0].message
             toast.error("Invalid Date Range", {
-                description: errorMessage
+                description: errorMessage,
             })
             setLoading(false)
             return
@@ -94,11 +108,16 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[500px]">
                 <DialogHeader>
-                    <DialogTitle className="text-xl sm:text-2xl">{task ? "Edit Task" : "Create New Task"}</DialogTitle>
+                    <DialogTitle className="text-xl sm:text-2xl">
+                        {task ? "Edit Task" : "Create New Task"}
+                    </DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-4 sm:space-y-5"
+                >
                     <div className="space-y-2">
                         <Label htmlFor="title">Title</Label>
                         <Input
@@ -126,57 +145,103 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label>Planning</Label>
                             <div className="space-y-4 rounded-lg border p-3">
-                                <div className="space-y-2 flex flex-col">
-                                    <Label className="text-xs text-muted-foreground">Estimated Start</Label>
+                                <div className="flex flex-col space-y-2">
+                                    <Label className="text-muted-foreground text-xs">
+                                        Estimated Start
+                                    </Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button
                                                 variant={"outline"}
                                                 className={cn(
                                                     "w-full justify-start text-left font-normal",
-                                                    !startDate && "text-muted-foreground"
+                                                    !startDate &&
+                                                        "text-muted-foreground"
                                                 )}
                                                 disabled={loading}
                                             >
                                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {startDate ? format(new Date(startDate), "PPP") : <span>Pick a date</span>}
+                                                {startDate ? (
+                                                    format(
+                                                        new Date(startDate),
+                                                        "PPP"
+                                                    )
+                                                ) : (
+                                                    <span>Pick a date</span>
+                                                )}
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
+                                        <PopoverContent
+                                            className="w-auto p-0"
+                                            align="start"
+                                        >
                                             <Calendar
                                                 mode="single"
-                                                selected={startDate ? new Date(startDate) : undefined}
-                                                onSelect={(date) => setStartDate(date ? date.toISOString() : "")}
+                                                selected={
+                                                    startDate
+                                                        ? new Date(startDate)
+                                                        : undefined
+                                                }
+                                                onSelect={(date) =>
+                                                    setStartDate(
+                                                        date
+                                                            ? date.toISOString()
+                                                            : ""
+                                                    )
+                                                }
                                                 initialFocus
                                             />
                                         </PopoverContent>
                                     </Popover>
                                 </div>
-                                <div className="space-y-2 flex flex-col">
-                                    <Label className="text-xs text-muted-foreground">Due Date</Label>
+                                <div className="flex flex-col space-y-2">
+                                    <Label className="text-muted-foreground text-xs">
+                                        Due Date
+                                    </Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button
                                                 variant={"outline"}
                                                 className={cn(
                                                     "w-full justify-start text-left font-normal",
-                                                    !dueDate && "text-muted-foreground"
+                                                    !dueDate &&
+                                                        "text-muted-foreground"
                                                 )}
                                                 disabled={loading}
                                             >
                                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {dueDate ? format(new Date(dueDate), "PPP") : <span>Pick a date</span>}
+                                                {dueDate ? (
+                                                    format(
+                                                        new Date(dueDate),
+                                                        "PPP"
+                                                    )
+                                                ) : (
+                                                    <span>Pick a date</span>
+                                                )}
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
+                                        <PopoverContent
+                                            className="w-auto p-0"
+                                            align="start"
+                                        >
                                             <Calendar
                                                 mode="single"
-                                                selected={dueDate ? new Date(dueDate) : undefined}
-                                                onSelect={(date) => setDueDate(date ? date.toISOString() : "")}
+                                                selected={
+                                                    dueDate
+                                                        ? new Date(dueDate)
+                                                        : undefined
+                                                }
+                                                onSelect={(date) =>
+                                                    setDueDate(
+                                                        date
+                                                            ? date.toISOString()
+                                                            : ""
+                                                    )
+                                                }
                                                 initialFocus
                                             />
                                         </PopoverContent>
@@ -187,52 +252,90 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
 
                         <div className="space-y-2">
                             <Label>Status & Actuals</Label>
-                            <div className="space-y-4 rounded-lg border p-3 h-full">
+                            <div className="h-full space-y-4 rounded-lg border p-3">
                                 <div className="space-y-2">
-                                    <Label className="text-xs text-muted-foreground">Current Status</Label>
+                                    <Label className="text-muted-foreground text-xs">
+                                        Current Status
+                                    </Label>
                                     <RadioGroup
                                         value={status}
-                                        onValueChange={(value) => setStatus(value as TaskStatus)}
+                                        onValueChange={(value) =>
+                                            setStatus(value as TaskStatus)
+                                        }
                                         className="flex flex-col space-y-1"
                                         disabled={loading}
                                     >
                                         <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="todo" id="todo" />
+                                            <RadioGroupItem
+                                                value="todo"
+                                                id="todo"
+                                            />
                                             <Label htmlFor="todo">To Do</Label>
                                         </div>
                                         <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="in_progress" id="in_progress" />
-                                            <Label htmlFor="in_progress">In Progress</Label>
+                                            <RadioGroupItem
+                                                value="in_progress"
+                                                id="in_progress"
+                                            />
+                                            <Label htmlFor="in_progress">
+                                                In Progress
+                                            </Label>
                                         </div>
                                         <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="done" id="done" />
+                                            <RadioGroupItem
+                                                value="done"
+                                                id="done"
+                                            />
                                             <Label htmlFor="done">Done</Label>
                                         </div>
                                     </RadioGroup>
                                 </div>
 
                                 {(status === "done" || task) && (
-                                    <div className="space-y-2 pt-2 border-t mt-2 flex flex-col">
-                                        <Label className="text-xs text-muted-foreground">Actual Completion</Label>
+                                    <div className="mt-2 flex flex-col space-y-2 border-t pt-2">
+                                        <Label className="text-muted-foreground text-xs">
+                                            Actual Completion
+                                        </Label>
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <Button
                                                     variant={"outline"}
                                                     className={cn(
                                                         "w-full justify-start text-left font-normal",
-                                                        !endDate && "text-muted-foreground"
+                                                        !endDate &&
+                                                            "text-muted-foreground"
                                                     )}
                                                     disabled={loading}
                                                 >
                                                     <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {endDate ? format(new Date(endDate), "PPP") : <span>Pick a date</span>}
+                                                    {endDate ? (
+                                                        format(
+                                                            new Date(endDate),
+                                                            "PPP"
+                                                        )
+                                                    ) : (
+                                                        <span>Pick a date</span>
+                                                    )}
                                                 </Button>
                                             </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0" align="start">
+                                            <PopoverContent
+                                                className="w-auto p-0"
+                                                align="start"
+                                            >
                                                 <Calendar
                                                     mode="single"
-                                                    selected={endDate ? new Date(endDate) : undefined}
-                                                    onSelect={(date) => setEndDate(date ? date.toISOString() : "")}
+                                                    selected={
+                                                        endDate
+                                                            ? new Date(endDate)
+                                                            : undefined
+                                                    }
+                                                    onSelect={(date) =>
+                                                        setEndDate(
+                                                            date
+                                                                ? date.toISOString()
+                                                                : ""
+                                                        )
+                                                    }
                                                     initialFocus
                                                 />
                                             </PopoverContent>
@@ -243,7 +346,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                         </div>
                     </div>
 
-                    <DialogFooter className="gap-2 pt-6 flex-col sm:flex-row">
+                    <DialogFooter className="flex-col gap-2 pt-6 sm:flex-row">
                         <Button
                             type="button"
                             variant="outline"
@@ -253,8 +356,16 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={loading} className="w-full sm:w-auto">
-                            {loading ? "Saving..." : task ? "Update Task" : "Create Task"}
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full sm:w-auto"
+                        >
+                            {loading
+                                ? "Saving..."
+                                : task
+                                  ? "Update Task"
+                                  : "Create Task"}
                         </Button>
                     </DialogFooter>
                 </form>

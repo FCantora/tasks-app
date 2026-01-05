@@ -5,13 +5,18 @@ import { authService } from "@/services/auth"
 export function useUserSession() {
     const [userEmail, setUserEmail] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
+    const [sessionLoading, setSessionLoading] = useState(true)
     const router = useRouter()
 
     useEffect(() => {
         const getUser = async () => {
-            const { data } = await authService.getUser()
-            if (data?.user?.email) {
-                setUserEmail(data.user.email)
+            try {
+                const { data } = await authService.getUser()
+                if (data?.user?.email) {
+                    setUserEmail(data.user.email)
+                }
+            } finally {
+                setSessionLoading(false)
             }
         }
         getUser()
@@ -25,7 +30,8 @@ export function useUserSession() {
 
     return {
         userEmail,
-        loading,
-        logout
+        loading, // logout loading
+        sessionLoading, // initial fetch loading
+        logout,
     }
 }

@@ -1,18 +1,18 @@
-"use client";
+"use client"
 
-import { DeleteTaskAlert } from "@/components/delete-task-alert";
-import { TaskCard } from "@/components/task-card";
-import { TaskDialog } from "@/components/task-dialog";
-import { TaskControls } from "@/components/task-controls";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import type { CreateTaskInput, Task } from "@/lib/types/task";
-import { Plus } from "lucide-react";
-import { useState } from "react";
-import { TaskSkeleton } from "@/components/task-skeleton";
-import { TaskKanban } from "@/components/task-kanban";
-import { TaskTimeline } from "@/components/task-timeline";
-import { useTasks } from "@/hooks/use-tasks";
+import { DeleteTaskAlert } from "@/components/delete-task-alert"
+import { TaskCard } from "@/components/task-card"
+import { TaskDialog } from "@/components/task-dialog"
+import { TaskControls } from "@/components/task-controls"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import type { CreateTaskInput, Task } from "@/lib/types/task"
+import { Plus } from "lucide-react"
+import { useState } from "react"
+import { TaskSkeleton } from "@/components/task-skeleton"
+import { TaskKanban } from "@/components/task-kanban"
+import { TaskTimeline } from "@/components/task-timeline"
+import { useTasks } from "@/hooks/use-tasks"
 
 enum DashboardView {
     LIST = "list",
@@ -21,7 +21,7 @@ enum DashboardView {
 }
 
 interface DashboardClientProps {
-    initialTasks: Task[];
+    initialTasks: Task[]
 }
 
 export function DashboardClient({ initialTasks }: DashboardClientProps) {
@@ -39,7 +39,7 @@ export function DashboardClient({ initialTasks }: DashboardClientProps) {
         updateTask,
         deleteTask,
         toggleComplete,
-        updateStatus
+        updateStatus,
     } = useTasks(initialTasks)
 
     const [view, setView] = useState<DashboardView>(DashboardView.LIST)
@@ -91,25 +91,37 @@ export function DashboardClient({ initialTasks }: DashboardClientProps) {
     }
 
     return (
-        <main className="bg-background flex flex-col min-h-[calc(100vh-4rem)]">
-            <div className="container max-w-7xl mx-auto px-4 py-6 sm:py-8">
-                <Tabs value={view} onValueChange={(v) => setView(v as DashboardView)} className="w-full">
-                    <div className="flex flex-col gap-4 mb-6 sm:mb-8">
+        <main className="bg-background flex min-h-[calc(100vh-4rem)] flex-col">
+            <div className="container mx-auto max-w-7xl px-4 py-6 sm:py-8">
+                <Tabs
+                    value={view}
+                    onValueChange={(v) => setView(v as DashboardView)}
+                    className="w-full"
+                >
+                    <div className="mb-6 flex flex-col gap-4 sm:mb-8">
                         <div className="flex flex-row items-center justify-between gap-4">
                             <div>
-                                <h1 className="text-3xl sm:text-4xl font-bold text-balance">My Tasks</h1>
+                                <h1 className="text-3xl font-bold text-balance sm:text-4xl">
+                                    My Tasks
+                                </h1>
                                 <p className="text-muted-foreground mt-1.5 sm:mt-2">
-                                    {filteredTasks.length} {filteredTasks.length === 1 ? "task" : "tasks"}
-                                    {statusFilter !== "all" && " matching filter"}
+                                    {filteredTasks.length}{" "}
+                                    {filteredTasks.length === 1
+                                        ? "task"
+                                        : "tasks"}
+                                    {statusFilter !== "all" &&
+                                        " matching filter"}
                                 </p>
                             </div>
                             <Button
                                 onClick={openCreateDialog}
                                 size="lg"
-                                className="h-12 w-12 rounded-full p-0 sm:h-11 sm:w-auto sm:rounded-md sm:px-6 font-semibold shadow-sm flex-shrink-0"
+                                className="h-12 w-12 flex-shrink-0 rounded-full p-0 font-semibold shadow-sm sm:h-11 sm:w-auto sm:rounded-md sm:px-6"
                             >
-                                <Plus className="h-6 w-6 sm:h-5 sm:w-5 sm:mr-2" />
-                                <span className="hidden sm:inline">New Task</span>
+                                <Plus className="h-6 w-6 sm:mr-2 sm:h-5 sm:w-5" />
+                                <span className="hidden sm:inline">
+                                    New Task
+                                </span>
                             </Button>
                         </div>
 
@@ -141,35 +153,44 @@ export function DashboardClient({ initialTasks }: DashboardClientProps) {
                     </div>
 
                     {loading ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {[1, 2, 3, 4, 5, 6].map((i) => (
                                 <TaskSkeleton key={i} />
                             ))}
                         </div>
                     ) : filteredTasks.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4">
-                            <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-muted flex items-center justify-center mb-4">
-                                <Plus className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground" />
+                        <div className="flex flex-col items-center justify-center px-4 py-12 sm:py-16">
+                            <div className="bg-muted mb-4 flex h-20 w-20 items-center justify-center rounded-full sm:h-24 sm:w-24">
+                                <Plus className="text-muted-foreground h-10 w-10 sm:h-12 sm:w-12" />
                             </div>
-                            <h2 className="text-xl sm:text-2xl font-semibold mb-2 text-center">
-                                {tasks.length === 0 ? "No tasks yet" : "No tasks found"}
+                            <h2 className="mb-2 text-center text-xl font-semibold sm:text-2xl">
+                                {tasks.length === 0
+                                    ? "No tasks yet"
+                                    : "No tasks found"}
                             </h2>
-                            <p className="text-muted-foreground text-center mb-6 max-w-sm text-balance text-sm sm:text-base">
+                            <p className="text-muted-foreground mb-6 max-w-sm text-center text-sm text-balance sm:text-base">
                                 {tasks.length === 0
                                     ? "Get started by creating your first task to stay organized and productive."
                                     : "Try adjusting your filters to see more tasks."}
                             </p>
                             {tasks.length === 0 && (
-                                <Button onClick={openCreateDialog} size="lg" className="h-11 px-6 font-semibold">
-                                    <Plus className="h-5 w-5 mr-2" />
+                                <Button
+                                    onClick={openCreateDialog}
+                                    size="lg"
+                                    className="h-11 px-6 font-semibold"
+                                >
+                                    <Plus className="mr-2 h-5 w-5" />
                                     Create Your First Task
                                 </Button>
                             )}
                         </div>
                     ) : (
                         <>
-                            <TabsContent value={DashboardView.LIST} className="space-y-4">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <TabsContent
+                                value={DashboardView.LIST}
+                                className="space-y-4"
+                            >
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                     {filteredTasks.map((task) => (
                                         <TaskCard
                                             key={task.id}
@@ -217,13 +238,16 @@ export function DashboardClient({ initialTasks }: DashboardClientProps) {
                 loading={deleteLoading}
             />
 
-            <footer className="py-6 border-t mt-auto">
+            <footer className="mt-auto border-t py-6">
                 <div className="container mx-auto flex flex-col items-center justify-center gap-4 text-center">
-                    <p className="text-sm text-muted-foreground">
-                        Built by <span className="font-medium text-primary">Fernando</span>
+                    <p className="text-muted-foreground text-sm">
+                        Built by{" "}
+                        <span className="text-primary font-medium">
+                            Fernando
+                        </span>
                     </p>
                 </div>
             </footer>
         </main>
-    );
+    )
 }

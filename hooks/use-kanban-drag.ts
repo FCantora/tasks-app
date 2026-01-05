@@ -7,7 +7,9 @@ interface UseKanbanDragProps {
 
 export const useKanbanDrag = ({ onUpdateStatus }: UseKanbanDragProps) => {
     const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null)
-    const [dragOverColumn, setDragOverColumn] = useState<TaskStatus | null>(null)
+    const [dragOverColumn, setDragOverColumn] = useState<TaskStatus | null>(
+        null
+    )
 
     const handleDragStart = (e: React.DragEvent, taskId: string) => {
         setDraggedTaskId(taskId)

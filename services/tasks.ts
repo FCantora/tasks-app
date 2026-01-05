@@ -4,7 +4,10 @@ import type { CreateTaskInput } from "@/lib/types/task"
 export const taskService = {
     async getTasks() {
         const supabase = createClient()
-        const result = await supabase.from("tasks").select("*").order("created_at", { ascending: false })
+        const result = await supabase
+            .from("tasks")
+            .select("*")
+            .order("created_at", { ascending: false })
 
         return { data: result.data || [], error: result.error }
     },
@@ -31,9 +34,17 @@ export const taskService = {
         return { data: result.data, error: result.error }
     },
 
-    async updateTask(id: string, input: Partial<CreateTaskInput> & { is_completed?: boolean }) {
+    async updateTask(
+        id: string,
+        input: Partial<CreateTaskInput> & { is_completed?: boolean }
+    ) {
         const supabase = createClient()
-        const result = await supabase.from("tasks").update(input).eq("id", id).select().single()
+        const result = await supabase
+            .from("tasks")
+            .update(input)
+            .eq("id", id)
+            .select()
+            .single()
 
         return { data: result.data, error: result.error }
     },
