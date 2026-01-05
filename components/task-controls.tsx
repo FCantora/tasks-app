@@ -1,16 +1,16 @@
 "use client"
 
 import { CheckCircle2, Circle, Clock, RotateCcw, Search } from "lucide-react"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
 import { TaskStatus } from "@/lib/types/task"
 import {
+    Button,
+    Input,
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "./ui/select"
+} from "@/components/ui"
 
 export type SortOption =
     | "date_desc"
@@ -76,18 +76,19 @@ export const TaskControls = ({
             <div className="flex w-full flex-1 flex-col items-center justify-end gap-2 sm:w-auto sm:flex-row">
                 {/* Search */}
                 <div className="relative w-full sm:max-w-[200px]">
-                    <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+                    <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" aria-hidden="true" />
                     <Input
                         placeholder="Search..."
                         value={searchQuery}
                         onChange={(e) => onSearchChange(e.target.value)}
                         className="h-9 pl-9"
+                        aria-label="Search tasks"
                     />
                 </div>
 
                 {/* Sort */}
                 <div className="flex w-full items-center gap-2 sm:w-auto">
-                    <label className="text-muted-foreground hidden text-sm font-medium whitespace-nowrap sm:inline">
+                    <label className="text-muted-foreground hidden text-sm font-medium whitespace-nowrap sm:inline" aria-hidden="true">
                         Sort:
                     </label>
                     <Select
@@ -96,7 +97,7 @@ export const TaskControls = ({
                             onSortChange(value as SortOption)
                         }
                     >
-                        <SelectTrigger className="h-9 w-full sm:w-[150px]">
+                        <SelectTrigger className="h-9 w-full sm:w-[150px]" aria-label="Sort tasks">
                             <SelectValue placeholder="Sort by" />
                         </SelectTrigger>
                         <SelectContent>
@@ -123,9 +124,11 @@ export const TaskControls = ({
                     disabled={!isFiltered}
                     className="text-muted-foreground hover:text-foreground h-9 w-auto shrink-0 px-2 sm:w-9 sm:px-0"
                     title="Reset filters"
+                    aria-label="Reset filters"
                 >
                     <RotateCcw
                         className={`h-4 w-4 ${isFiltered ? "text-primary hover:text-primary/80" : ""}`}
+                        aria-hidden="true"
                     />
                     <span className="ml-2 text-xs sm:hidden">
                         Reset all filters

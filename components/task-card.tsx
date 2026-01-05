@@ -36,6 +36,7 @@ export const TaskCard = ({
                             onToggleComplete(task.id, checked as boolean)
                         }
                         className="mt-1 flex-shrink-0"
+                        aria-label={`Mark "${task.title}" as ${task.is_completed ? "incomplete" : "complete"}`}
                     />
                     <div className="min-w-0 flex-1 space-y-1.5">
                         <h3
