@@ -34,7 +34,7 @@ A modern, responsive Task Management Application built with **Next.js 15** and *
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **State Management**: React Hooks + Optimistic Updates
 - **Validation**: [Zod](https://zod.dev/)
-- **Utilities**: `date-fns`, `sonner` (for toasts), `clsx`, `tailwind-merge`
+- **Utilities**: `sonner` (for toasts), `clsx`, `tailwind-merge`
 
 ## 🏁 Getting Started
 
@@ -139,3 +139,9 @@ With more time, I would consider adding:
 - **Recurrence**: Add support for recurring tasks (daily, weekly).
 - **User Roles**: Implement a role-based system (Admin/User) to allow a Superadmin to ban abusive users or manage platform content.
 - **Testing**: Add Jest and React Testing Library for unit tests, and Playwright for E2E testing.
+- **Realtime Sync**: Implement Supabase Realtime to synchronize task updates across multiple devices instantly.
+
+## 🧹 Code Quality
+
+- **ESLint**: Configured with `simple-import-sort` and `unused-imports` for clean and consistent code.
+- **Formatting**: Run `npm run lint -- --fix` to automatically sort imports and remove unused variables.

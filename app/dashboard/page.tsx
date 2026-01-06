@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/server"
 import { DashboardClient } from "@/components/dashboard"
+import { createClient } from "@/lib/supabase/server"
 
 export default async function DashboardPage() {
     const supabase = await createClient()
@@ -9,7 +9,7 @@ export default async function DashboardPage() {
 
     // We already check for user in middleware, but for TS safety
     if (!user) {
-        return null // Middleware handles redirect
+        return null
     }
 
     const { data: tasks } = await supabase

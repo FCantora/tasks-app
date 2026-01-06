@@ -1,11 +1,23 @@
 "use client"
 
-import { ListTodo, LogOut, Loader2 } from "lucide-react"
-import { Button } from "./ui/button"
-import { ThemeToggle } from "./theme-toggle"
+import { ListTodo, Loader2,LogOut } from "lucide-react"
+import dynamic from "next/dynamic"
+
 import { useUserSession } from "@/hooks/use-user-session"
 
-import { Skeleton } from "./ui/skeleton"
+import { Button, Skeleton } from "./ui"
+
+const ThemeToggle = dynamic(
+    () => import("./theme-toggle").then((mod) => mod.ThemeToggle),
+    {
+        ssr: false,
+        loading: () => (
+            <Button variant="ghost" size="icon" className="h-4 w-4 bg-primary rounded-full">
+                <span className="sr-only">Toggle theme</span>
+            </Button>
+        ),
+    }
+)
 
 export const Topbar = () => {
     const { userEmail, loading, sessionLoading, logout } = useUserSession()

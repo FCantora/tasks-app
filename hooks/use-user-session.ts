@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useEffect,useState } from "react"
+
 import { authService } from "@/services/auth"
 
-export function useUserSession() {
+export const useUserSession = () => {
     const [userEmail, setUserEmail] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const [sessionLoading, setSessionLoading] = useState(true)
@@ -30,8 +31,8 @@ export function useUserSession() {
 
     return {
         userEmail,
-        loading, // logout loading
-        sessionLoading, // initial fetch loading
+        loading,
+        sessionLoading,
         logout,
     }
 }

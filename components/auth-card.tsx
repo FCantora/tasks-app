@@ -1,18 +1,19 @@
 "use client"
 
+import { CheckCircle2, ListTodo } from "lucide-react"
+
 import {
     Alert,
     AlertDescription,
     Button,
-    Input,
-    Label,
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
+    Input,
+    Label,
 } from "@/components/ui"
-import { CheckCircle2, ListTodo } from "lucide-react"
 import { useAuthForm } from "@/hooks/use-auth-form"
 
 export const AuthCard = () => {

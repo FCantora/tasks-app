@@ -25,3 +25,20 @@ export interface CreateTaskInput {
 export interface UpdateTaskInput extends Partial<CreateTaskInput> {
     is_completed?: boolean
 }
+
+export type SortOption =
+    | "date_desc"
+    | "date_asc"
+    | "created_desc"
+    | "created_asc"
+
+export const SORT_OPTIONS = {
+    DATE_DESC: "date_desc",
+    DATE_ASC: "date_asc",
+    CREATED_DESC: "created_desc",
+    CREATED_ASC: "created_asc",
+} as const
+
+export const DEFAULT_SORT: SortOption = "created_desc"
+export const DEFAULT_STATUS_FILTER = "all"
+

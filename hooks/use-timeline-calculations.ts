@@ -1,5 +1,6 @@
-import { Task } from "@/lib/types/task"
 import { useMemo } from "react"
+
+import { Task } from "@/lib/types/task"
 
 export interface TimelineTask extends Task {
     effectiveStart: Date
@@ -7,20 +8,17 @@ export interface TimelineTask extends Task {
 }
 
 export const useTimelineCalculations = (tasks: Task[]) => {
-    // 1. Prepare data with effective dates
     const timelineTasks = useMemo(() => {
         return tasks.map((t) => {
             const start = t.start_date
                 ? new Date(t.start_date)
                 : new Date(t.created_at)
-            // End date priority: end_date -> due_date -> start (same day task)
             let end = t.end_date
                 ? new Date(t.end_date)
                 : t.due_date
                   ? new Date(t.due_date)
                   : new Date(start)
 
-            // Ensure end is not before start
             if (end < start) end = start
 
             return {
@@ -31,7 +29,6 @@ export const useTimelineCalculations = (tasks: Task[]) => {
         })
     }, [tasks])
 
-    // 2. Determine Timeline Range
     const range = useMemo(() => {
         if (timelineTasks.length === 0)
             return { start: new Date(), end: new Date(), totalDays: 1 }
@@ -43,11 +40,9 @@ export const useTimelineCalculations = (tasks: Task[]) => {
             Math.max(...timelineTasks.map((t) => t.effectiveEnd.getTime()))
         )
 
-        // Add buffer (1 day before, 5 days after)
         minDate.setDate(minDate.getDate() - 1)
         maxDate.setDate(maxDate.getDate() + 5)
 
-        // Ensure at least a week view if tasks are close
         if (maxDate.getTime() <= minDate.getTime()) {
             maxDate.setDate(minDate.getDate() + 7)
         }
@@ -59,12 +54,10 @@ export const useTimelineCalculations = (tasks: Task[]) => {
         return { start: minDate, end: maxDate, totalDays }
     }, [timelineTasks])
 
-    // Helper to position bars
     const getPosition = (start: Date, end: Date) => {
         const startDiff = Math.ceil(
             (start.getTime() - range.start.getTime()) / (1000 * 60 * 60 * 24)
         )
-        // Add 1 day (in ms) to include the end date fully: (End - Start) + 1 Day
         const duration =
             Math.ceil(
                 (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
@@ -76,7 +69,6 @@ export const useTimelineCalculations = (tasks: Task[]) => {
         return { left: `${left}%`, width: `${width}%` }
     }
 
-    // Generate date headers
     const headers = useMemo(() => {
         const days = []
         const current = new Date(range.start)
@@ -87,7 +79,6 @@ export const useTimelineCalculations = (tasks: Task[]) => {
         return days
     }, [range])
 
-    // Group headers by month
     const months = useMemo(() => {
         const groups: { label: string; count: number }[] = []
         if (headers.length === 0) return groups

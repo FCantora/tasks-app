@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { TASK_STATUS_VALUES } from "@/lib/constants/tasks"
+
 export const createTaskSchema = z
     .object({
         title: z
@@ -7,7 +9,11 @@ export const createTaskSchema = z
             .min(1, "Title is required")
             .max(100, "Title must be 100 characters or less"),
         description: z.string().optional(),
-        status: z.enum(["todo", "in_progress", "done"]),
+        status: z.enum([
+            TASK_STATUS_VALUES.TODO,
+            TASK_STATUS_VALUES.IN_PROGRESS,
+            TASK_STATUS_VALUES.DONE,
+        ]),
         due_date: z.string().optional(),
         start_date: z.string().optional(),
         end_date: z.string().optional(),
@@ -37,7 +43,7 @@ export const createTaskSchema = z
         }
     )
     .transform((data) => {
-        if (data.status === "done" && !data.end_date) {
+        if (data.status === TASK_STATUS_VALUES.DONE && !data.end_date) {
             return {
                 ...data,
                 end_date: new Date().toISOString(),

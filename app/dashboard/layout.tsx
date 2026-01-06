@@ -1,6 +1,6 @@
-import { Topbar } from "@/components/topbar"
-
 import { Metadata } from "next"
+
+import { Topbar } from "@/components/topbar"
 
 export const metadata: Metadata = {
     title: "Dashboard",

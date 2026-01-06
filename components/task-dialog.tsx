@@ -1,4 +1,11 @@
-import { useEffect, useState } from "react"
+import { Calendar as CalendarIcon } from "lucide-react"
+
+import { useTaskForm } from "@/hooks/use-task-form"
+import { TASK_STATUS_VALUES } from "@/lib/constants/tasks"
+import { formatDate } from "@/lib/date"
+import { CreateTaskInput, Task, TaskStatus } from "@/lib/types/task"
+import { cn } from "@/lib/utils"
+
 import {
     Button,
     Calendar,
@@ -16,22 +23,6 @@ import {
     RadioGroupItem,
     Textarea,
 } from "./ui"
-import { Task, TaskStatus } from "@/lib/types/task"
-import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-// Added import
-import { toast } from "sonner"
-import { createTaskSchema } from "@/lib/schemas/task"
-
-export interface CreateTaskInput {
-    title: string
-    description?: string
-    status?: TaskStatus
-    due_date?: string
-    start_date?: string
-    end_date?: string
-}
 
 interface Props {
     open: boolean
@@ -40,71 +31,9 @@ interface Props {
     task?: Task | null
 }
 
-export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
-    const [title, setTitle] = useState("")
-    const [description, setDescription] = useState("")
-    const [status, setStatus] = useState<TaskStatus>("todo")
-    const [dueDate, setDueDate] = useState("")
-    const [startDate, setStartDate] = useState("")
-    const [endDate, setEndDate] = useState("")
-    const [loading, setLoading] = useState(false)
-
-    useEffect(() => {
-        if (task) {
-            setTitle(task.title)
-            setDescription(task.description || "")
-            setStatus(task.status)
-            setDueDate(task.due_date ? task.due_date.split("T")[0] : "")
-            setStartDate(task.start_date ? task.start_date.split("T")[0] : "")
-            setEndDate(task.end_date ? task.end_date.split("T")[0] : "")
-        } else {
-            setTitle("")
-            setDescription("")
-            setStatus("todo")
-            setDueDate("")
-            setStartDate("")
-            setEndDate("")
-        }
-    }, [task, open])
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setLoading(true)
-
-        const formData = {
-            title,
-            description: description || undefined,
-            status,
-            due_date: dueDate || undefined,
-            start_date: startDate || undefined,
-            end_date: endDate || undefined,
-        }
-
-        const result = createTaskSchema.safeParse(formData)
-
-        if (!result.success) {
-            const errorMessage = result.error.issues[0].message
-            toast.error("Invalid Date Range", {
-                description: errorMessage,
-            })
-            setLoading(false)
-            return
-        }
-
-        try {
-            await onSave({
-                title,
-                description: description || undefined,
-                status,
-                due_date: dueDate || undefined,
-                start_date: startDate || undefined,
-                end_date: endDate || undefined,
-            })
-            onOpenChange(false)
-        } finally {
-            setLoading(false)
-        }
-    }
+export const TaskDialog = (props: Props) => {
+    const { formData, loading, updateField, handleSubmit } = useTaskForm(props)
+    const { task, open, onOpenChange } = props
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -123,8 +52,8 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                         <Input
                             id="title"
                             placeholder="Enter task title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            value={formData.title}
+                            onChange={(e) => updateField("title", e.target.value)}
                             required
                             maxLength={100}
                             disabled={loading}
@@ -137,8 +66,10 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                         <Textarea
                             id="description"
                             placeholder="Add more details about this task..."
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            value={formData.description || ""}
+                            onChange={(e) =>
+                                updateField("description", e.target.value)
+                            }
                             disabled={loading}
                             rows={4}
                             className="resize-none"
@@ -159,17 +90,14 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                                                 variant={"outline"}
                                                 className={cn(
                                                     "w-full justify-start text-left font-normal",
-                                                    !startDate &&
-                                                        "text-muted-foreground"
+                                                    !formData.start_date &&
+                                                    "text-muted-foreground"
                                                 )}
                                                 disabled={loading}
                                             >
                                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {startDate ? (
-                                                    format(
-                                                        new Date(startDate),
-                                                        "PPP"
-                                                    )
+                                                {formData.start_date ? (
+                                                    formatDate(formData.start_date)
                                                 ) : (
                                                     <span>Pick a date</span>
                                                 )}
@@ -182,18 +110,15 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                                             <Calendar
                                                 mode="single"
                                                 selected={
-                                                    startDate
-                                                        ? new Date(startDate)
+                                                    formData.start_date
+                                                        ? new Date(formData.start_date)
                                                         : undefined
                                                 }
                                                 onSelect={(date) =>
-                                                    setStartDate(
-                                                        date
-                                                            ? date.toISOString()
-                                                            : ""
+                                                    updateField("start_date",
+                                                        date ? date.toISOString() : undefined
                                                     )
                                                 }
-                                                initialFocus
                                             />
                                         </PopoverContent>
                                     </Popover>
@@ -208,17 +133,14 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                                                 variant={"outline"}
                                                 className={cn(
                                                     "w-full justify-start text-left font-normal",
-                                                    !dueDate &&
-                                                        "text-muted-foreground"
+                                                    !formData.due_date &&
+                                                    "text-muted-foreground"
                                                 )}
                                                 disabled={loading}
                                             >
                                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {dueDate ? (
-                                                    format(
-                                                        new Date(dueDate),
-                                                        "PPP"
-                                                    )
+                                                {formData.due_date ? (
+                                                    formatDate(formData.due_date)
                                                 ) : (
                                                     <span>Pick a date</span>
                                                 )}
@@ -231,18 +153,15 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                                             <Calendar
                                                 mode="single"
                                                 selected={
-                                                    dueDate
-                                                        ? new Date(dueDate)
+                                                    formData.due_date
+                                                        ? new Date(formData.due_date)
                                                         : undefined
                                                 }
                                                 onSelect={(date) =>
-                                                    setDueDate(
-                                                        date
-                                                            ? date.toISOString()
-                                                            : ""
+                                                    updateField("due_date",
+                                                        date ? date.toISOString() : undefined
                                                     )
                                                 }
-                                                initialFocus
                                             />
                                         </PopoverContent>
                                     </Popover>
@@ -258,23 +177,23 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                                         Current Status
                                     </Label>
                                     <RadioGroup
-                                        value={status}
+                                        value={formData.status}
                                         onValueChange={(value) =>
-                                            setStatus(value as TaskStatus)
+                                            updateField("status", value as TaskStatus)
                                         }
                                         className="flex flex-col space-y-1"
                                         disabled={loading}
                                     >
                                         <div className="flex items-center space-x-2">
                                             <RadioGroupItem
-                                                value="todo"
+                                                value={TASK_STATUS_VALUES.TODO}
                                                 id="todo"
                                             />
                                             <Label htmlFor="todo">To Do</Label>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <RadioGroupItem
-                                                value="in_progress"
+                                                value={TASK_STATUS_VALUES.IN_PROGRESS}
                                                 id="in_progress"
                                             />
                                             <Label htmlFor="in_progress">
@@ -283,7 +202,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <RadioGroupItem
-                                                value="done"
+                                                value={TASK_STATUS_VALUES.DONE}
                                                 id="done"
                                             />
                                             <Label htmlFor="done">Done</Label>
@@ -291,7 +210,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                                     </RadioGroup>
                                 </div>
 
-                                {(status === "done" || task) && (
+                                {(formData.status === TASK_STATUS_VALUES.DONE || task) && (
                                     <div className="mt-2 flex flex-col space-y-2 border-t pt-2">
                                         <Label className="text-muted-foreground text-xs">
                                             Actual Completion
@@ -302,17 +221,14 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                                                     variant={"outline"}
                                                     className={cn(
                                                         "w-full justify-start text-left font-normal",
-                                                        !endDate &&
-                                                            "text-muted-foreground"
+                                                        !formData.end_date &&
+                                                        "text-muted-foreground"
                                                     )}
                                                     disabled={loading}
                                                 >
                                                     <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {endDate ? (
-                                                        format(
-                                                            new Date(endDate),
-                                                            "PPP"
-                                                        )
+                                                    {formData.end_date ? (
+                                                        formatDate(formData.end_date)
                                                     ) : (
                                                         <span>Pick a date</span>
                                                     )}
@@ -325,18 +241,15 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                                                 <Calendar
                                                     mode="single"
                                                     selected={
-                                                        endDate
-                                                            ? new Date(endDate)
+                                                        formData.end_date
+                                                            ? new Date(formData.end_date)
                                                             : undefined
                                                     }
                                                     onSelect={(date) =>
-                                                        setEndDate(
-                                                            date
-                                                                ? date.toISOString()
-                                                                : ""
+                                                        updateField("end_date",
+                                                            date ? date.toISOString() : undefined
                                                         )
                                                     }
-                                                    initialFocus
                                                 />
                                             </PopoverContent>
                                         </Popover>
@@ -364,12 +277,12 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task }: Props) => {
                             {loading
                                 ? "Saving..."
                                 : task
-                                  ? "Update Task"
-                                  : "Create Task"}
+                                    ? "Update Task"
+                                    : "Create Task"}
                         </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     )
 }

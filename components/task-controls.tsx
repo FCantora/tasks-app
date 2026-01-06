@@ -1,7 +1,5 @@
-"use client"
-
 import { CheckCircle2, Circle, Clock, RotateCcw, Search } from "lucide-react"
-import { TaskStatus } from "@/lib/types/task"
+
 import {
     Button,
     Input,
@@ -11,18 +9,32 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui"
+import {
+    TASK_STATUS_LABELS,
+    TASK_STATUS_VALUES,
+    TASK_STATUSES,
+} from "@/lib/constants/tasks"
+import {
+    DEFAULT_SORT,
+    DEFAULT_STATUS_FILTER,
+    SORT_OPTIONS,
+    SortOption,
+    TaskStatus,
+} from "@/lib/types/task"
 
-export type SortOption =
-    | "date_desc"
-    | "date_asc"
-    | "created_desc"
-    | "created_asc"
+const STATUS_ICONS = {
+    [TASK_STATUS_VALUES.TODO]: Circle,
+    [TASK_STATUS_VALUES.IN_PROGRESS]: Clock,
+    [TASK_STATUS_VALUES.DONE]: CheckCircle2,
+} as const
 
 const filters = [
-    { value: "all", label: "All", icon: Circle },
-    { value: "todo", label: "To Do", icon: Circle },
-    { value: "in_progress", label: "In Progress", icon: Clock },
-    { value: "done", label: "Done", icon: CheckCircle2 },
+    { value: DEFAULT_STATUS_FILTER, label: "All", icon: Circle },
+    ...TASK_STATUSES.map((status) => ({
+        value: status,
+        label: TASK_STATUS_LABELS[status],
+        icon: STATUS_ICONS[status],
+    })),
 ] as const
 
 interface Props {
@@ -45,13 +57,13 @@ export const TaskControls = ({
     onReset,
 }: Props) => {
     const isFiltered =
-        statusFilter !== "all" ||
+        statusFilter !== DEFAULT_STATUS_FILTER ||
         searchQuery !== "" ||
-        sortBy !== "created_desc"
+        sortBy !== DEFAULT_SORT
 
     return (
         <div className="flex flex-col items-start justify-between gap-4 px-2 sm:flex-row sm:items-center">
-            <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto">
+            <div className="flex w-full flex-wrap items-center justify-between sm:gap-2 sm:w-auto">
                 <span className="text-muted-foreground mr-1 hidden text-sm font-medium sm:inline">
                     Filter:
                 </span>
@@ -74,7 +86,6 @@ export const TaskControls = ({
             </div>
 
             <div className="flex w-full flex-1 flex-col items-center justify-end gap-2 sm:w-auto sm:flex-row">
-                {/* Search */}
                 <div className="relative w-full sm:max-w-[200px]">
                     <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" aria-hidden="true" />
                     <Input
@@ -86,7 +97,6 @@ export const TaskControls = ({
                     />
                 </div>
 
-                {/* Sort */}
                 <div className="flex w-full items-center gap-2 sm:w-auto">
                     <label className="text-muted-foreground hidden text-sm font-medium whitespace-nowrap sm:inline" aria-hidden="true">
                         Sort:
@@ -101,22 +111,20 @@ export const TaskControls = ({
                             <SelectValue placeholder="Sort by" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="created_desc">Newest</SelectItem>
-                            <SelectItem value="created_asc">Oldest</SelectItem>
-                            <SelectItem value="date_desc">
+                            <SelectItem value={SORT_OPTIONS.CREATED_DESC}>Newest</SelectItem>
+                            <SelectItem value={SORT_OPTIONS.CREATED_ASC}>Oldest</SelectItem>
+                            <SelectItem value={SORT_OPTIONS.DATE_DESC}>
                                 Due Date (Far)
                             </SelectItem>
-                            <SelectItem value="date_asc">
+                            <SelectItem value={SORT_OPTIONS.DATE_ASC}>
                                 Due Date (Soon)
                             </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
 
-                {/* Separator */}
                 <div className="bg-border hidden h-6 w-px sm:ml-5 sm:block" />
 
-                {/* Reset */}
                 <Button
                     variant="ghost"
                     size="icon"

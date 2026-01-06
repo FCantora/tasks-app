@@ -1,4 +1,10 @@
 import { Calendar, CheckCircle2, Clock, Pencil, Trash2 } from "lucide-react"
+
+import { TASK_STATUS_COLORS, TASK_STATUS_LABELS, TASK_STATUS_VALUES } from "@/lib/constants/tasks"
+import { formatDate, isOverdue } from "@/lib/date"
+import { Task } from "@/lib/types/task"
+import { cn } from "@/lib/utils"
+
 import {
     Badge,
     Button,
@@ -8,10 +14,6 @@ import {
     CardHeader,
     Checkbox,
 } from "./ui"
-import { Task } from "@/lib/types/task"
-import { cn } from "@/lib/utils"
-import { TASK_STATUS_COLORS, TASK_STATUS_LABELS } from "@/lib/constants/tasks"
-import { formatDate, isOverdue } from "@/lib/date"
 
 interface Props {
     task: Task
@@ -78,7 +80,7 @@ const TaskDates = ({ task }: { task: Task }) => {
                 </span>
             </div>
 
-            {task.status === "done" && task.end_date ? (
+            {task.status === TASK_STATUS_VALUES.DONE && task.end_date ? (
                 <div className="flex items-center gap-1.5 font-medium text-green-600 dark:text-green-500">
                     <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" />
                     <span className="truncate">

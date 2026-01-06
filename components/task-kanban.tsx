@@ -1,15 +1,15 @@
-"use client"
-
-import { Task, TaskStatus } from "@/lib/types/task"
-import { Badge } from "./ui/badge"
-import { TaskCard } from "./task-card"
-import { cn } from "@/lib/utils"
+import { useKanbanDrag } from "@/hooks/use-kanban-drag"
 import {
     TASK_STATUS_COLORS,
     TASK_STATUS_LABELS,
     TASK_STATUSES,
 } from "@/lib/constants/tasks"
-import { useKanbanDrag } from "@/hooks/use-kanban-drag"
+import { Task, TaskStatus } from "@/lib/types/task"
+import { DEFAULT_STATUS_FILTER } from "@/lib/types/task"
+import { cn } from "@/lib/utils"
+
+import { TaskCard } from "./task-card"
+import { Badge } from "./ui/badge"
 
 interface Props {
     tasks: Task[]
@@ -32,7 +32,7 @@ export const TaskKanban = ({
     onDelete,
     onToggleComplete,
     onUpdateStatus,
-    statusFilter = "all",
+    statusFilter = DEFAULT_STATUS_FILTER,
 }: Props) => {
     const {
         draggedTaskId,
@@ -44,7 +44,7 @@ export const TaskKanban = ({
     } = useKanbanDrag({ onUpdateStatus })
 
     const visibleColumns =
-        statusFilter === "all"
+        statusFilter === DEFAULT_STATUS_FILTER
             ? columnsDefinitions
             : columnsDefinitions.filter((col) => col.id === statusFilter)
 

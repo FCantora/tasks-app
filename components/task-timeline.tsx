@@ -1,13 +1,10 @@
-"use client"
-
+import { TimelineTask, useTimelineCalculations } from "@/hooks/use-timeline-calculations"
+import { TASK_STATUS_VALUES } from "@/lib/constants/tasks"
 import { Task } from "@/lib/types/task"
 import { cn } from "@/lib/utils"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card"
+
 import { TaskCard } from "./task-card"
-import {
-    useTimelineCalculations,
-    TimelineTask,
-} from "@/hooks/use-timeline-calculations"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card"
 
 interface Props {
     tasks: Task[]
@@ -158,11 +155,11 @@ const TimelineTaskRow = ({
                     <div
                         className={cn(
                             "absolute flex h-8 cursor-pointer items-center gap-2 overflow-hidden rounded-md border px-2 shadow-sm transition-all hover:z-20 hover:brightness-95",
-                            task.status === "done"
+                            task.status === TASK_STATUS_VALUES.DONE
                                 ? "border-green-200 bg-green-100 text-green-900 dark:border-green-800 dark:bg-green-900/30 dark:text-green-100"
-                                : task.status === "in_progress"
-                                  ? "border-blue-200 bg-blue-100 text-blue-900 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-100"
-                                  : "border-gray-200 bg-gray-100 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                                : task.status === TASK_STATUS_VALUES.IN_PROGRESS
+                                    ? "border-blue-200 bg-blue-100 text-blue-900 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-100"
+                                    : "border-gray-200 bg-gray-100 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                         )}
                         style={position}
                         onClick={() => onEdit(task)}

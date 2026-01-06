@@ -13,4 +13,14 @@ export const TASK_STATUS_COLORS: Record<TaskStatus, string> = {
     done: "bg-status-done text-status-done-fg border-status-done-border",
 }
 
-export const TASK_STATUSES: TaskStatus[] = ["todo", "in_progress", "done"]
+export const TASK_STATUS_VALUES = {
+    TODO: "todo",
+    IN_PROGRESS: "in_progress",
+    DONE: "done",
+} as const
+
+export const TASK_STATUSES: TaskStatus[] = [
+    TASK_STATUS_VALUES.TODO,
+    TASK_STATUS_VALUES.IN_PROGRESS,
+    TASK_STATUS_VALUES.DONE,
+]

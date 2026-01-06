@@ -1,11 +1,12 @@
-import { TaskStatus } from "@/lib/types/task"
 import { useState } from "react"
 
-interface UseKanbanDragProps {
+import { TaskStatus } from "@/lib/types/task"
+
+interface Props {
     onUpdateStatus: (taskId: string, status: TaskStatus) => void
 }
 
-export const useKanbanDrag = ({ onUpdateStatus }: UseKanbanDragProps) => {
+export const useKanbanDrag = ({ onUpdateStatus }: Props) => {
     const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null)
     const [dragOverColumn, setDragOverColumn] = useState<TaskStatus | null>(
         null

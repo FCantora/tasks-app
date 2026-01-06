@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+
 import { authService } from "@/services/auth"
 
-export function useAuthForm() {
+export const useAuthForm = () => {
     const [isSignUp, setIsSignUp] = useState(false)
     const [formData, setFormData] = useState({
         email: "",
@@ -30,7 +31,6 @@ export function useAuthForm() {
 
                 if (error) throw error
 
-                // Check if user already exists (Supabase returns empty identities for existing users to prevent enumeration)
                 if (
                     data.user &&
                     data.user.identities &&

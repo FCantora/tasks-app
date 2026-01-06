@@ -1,20 +1,27 @@
-"use client"
-
-import { useState, useEffect, useMemo } from "react"
+import { useEffect, useMemo,useState } from "react"
 import { toast } from "sonner"
-import { taskService } from "@/services/tasks"
-import type { CreateTaskInput, Task, TaskStatus } from "@/lib/types/task"
 
-export function useTasks(initialTasks?: Task[]) {
+import { TASK_STATUS_VALUES } from "@/lib/constants/tasks"
+import {
+    type CreateTaskInput,
+    DEFAULT_SORT,
+    DEFAULT_STATUS_FILTER,
+    SORT_OPTIONS,
+    type SortOption,
+    type Task,
+    type TaskStatus,
+} from "@/lib/types/task"
+import { taskService } from "@/services/tasks"
+
+export const useTasks = (initialTasks?: Task[]) => {
     const [tasks, setTasks] = useState<Task[]>(initialTasks || [])
-    const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all")
+    const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">(
+        DEFAULT_STATUS_FILTER
+    )
     const [searchQuery, setSearchQuery] = useState("")
-    const [sortBy, setSortBy] = useState<
-        "date_desc" | "date_asc" | "created_desc" | "created_asc"
-    >("created_desc")
+    const [sortBy, setSortBy] = useState<SortOption>(DEFAULT_SORT)
     const [loading, setLoading] = useState(!initialTasks)
 
-    // Helper for centralized async handling
     const performAction = async <T>(
         action: () => Promise<{ data?: T | null; error?: unknown }>,
         options: {
@@ -73,12 +80,9 @@ export function useTasks(initialTasks?: Task[]) {
     const filteredTasks = useMemo(() => {
         let result = tasks
 
-        // Filter by status
-        if (statusFilter !== "all") {
+        if (statusFilter !== DEFAULT_STATUS_FILTER) {
             result = result.filter((task) => task.status === statusFilter)
         }
-
-        // Filter by search query
         if (searchQuery) {
             const query = searchQuery.toLowerCase()
             result = result.filter(
@@ -89,29 +93,28 @@ export function useTasks(initialTasks?: Task[]) {
             )
         }
 
-        // Sort
         result = [...result].sort((a, b) => {
             switch (sortBy) {
-                case "date_asc":
+                case SORT_OPTIONS.DATE_ASC:
                     if (!a.due_date) return 1
                     if (!b.due_date) return -1
                     return (
                         new Date(a.due_date).getTime() -
                         new Date(b.due_date).getTime()
                     )
-                case "date_desc":
+                case SORT_OPTIONS.DATE_DESC:
                     if (!a.due_date) return 1
                     if (!b.due_date) return -1
                     return (
                         new Date(b.due_date).getTime() -
                         new Date(a.due_date).getTime()
                     )
-                case "created_asc":
+                case SORT_OPTIONS.CREATED_ASC:
                     return (
                         new Date(a.created_at).getTime() -
                         new Date(b.created_at).getTime()
                     )
-                case "created_desc":
+                case SORT_OPTIONS.CREATED_DESC:
                     return (
                         new Date(b.created_at).getTime() -
                         new Date(a.created_at).getTime()
@@ -155,11 +158,12 @@ export function useTasks(initialTasks?: Task[]) {
     const toggleComplete = async (taskId: string, isCompleted: boolean) => {
         const updates = {
             is_completed: isCompleted,
-            status: (isCompleted ? "done" : "todo") as TaskStatus,
+            status: (isCompleted
+                ? TASK_STATUS_VALUES.DONE
+                : TASK_STATUS_VALUES.TODO) as TaskStatus,
             end_date: isCompleted ? new Date().toISOString() : null,
         }
 
-        // Optimistic update
         const previousTasks = [...tasks]
         setTasks(tasks.map((t) => (t.id === taskId ? { ...t, ...updates } : t)))
 
@@ -168,19 +172,18 @@ export function useTasks(initialTasks?: Task[]) {
                 errorTitle: "Error updating task",
             })
         } catch {
-            setTasks(previousTasks) // Revert on error
+            setTasks(previousTasks)
         }
     }
 
     const updateStatus = async (taskId: string, status: TaskStatus) => {
-        const isCompleted = status === "done"
+        const isCompleted = status === TASK_STATUS_VALUES.DONE
         const updates = {
             status,
             is_completed: isCompleted,
             end_date: isCompleted ? new Date().toISOString() : null,
         }
 
-        // Optimistic update
         const previousTasks = [...tasks]
         setTasks(tasks.map((t) => (t.id === taskId ? { ...t, ...updates } : t)))
 
@@ -189,7 +192,7 @@ export function useTasks(initialTasks?: Task[]) {
                 errorTitle: "Error updating task status",
             })
         } catch {
-            setTasks(previousTasks) // Revert on error
+            setTasks(previousTasks)
         }
     }
 
