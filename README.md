@@ -4,6 +4,17 @@ A modern, responsive Task Management Application built with **Next.js 15** and *
 
 **[🚀 Live Demo](https://tasks-app-fcantora.vercel.app/)**
 
+### 🎥 Video Demo
+
+[Watch the walkthrough on Loom](https://www.loom.com/share/2bc022a87a2a4fa3954aa07bf14f03f2)
+
+### 🔑 Demo Credentials
+
+You can use these credentials to test the live demo:
+
+- **Email**: `fer.cantora90@gmail.com`
+- **Password**: `123456`
+
 ## 🚀 Features
 
 ### Core
